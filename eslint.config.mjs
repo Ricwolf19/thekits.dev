@@ -7,6 +7,16 @@ const config = [
   ...coreWebVitals,
   ...typescript,
   { ignores: [".next/**", "node_modules/**", "next-env.d.ts"] },
+  {
+    rules: {
+      // A leading underscore marks a parameter that is deliberately unused
+      // (e.g. `ref` pulled off a prop bag so it is not forwarded).
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
 ];
 
 export default config;
