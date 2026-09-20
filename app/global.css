@@ -1,12 +1,137 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
-/* Imported unprefixed on purpose. Fumadocs' preset ships its own utility
-   classes (`ps-6`, …) and `prefix()` namespaces those too, so the theme's
-   internals stop resolving. Nothing else here claims the `fd-` variables, so
-   there is no collision to guard against. */
+/* Imported unprefixed on purpose: `prefix()` namespaces the theme's own
+   utilities (`ps-6`, …) and breaks them. */
 @import "fumadocs-ui/css/preset.css";
-
 @import "listkit/tailwind.css";
 @import "uploaderkit/tailwind.css";
 
 @source "../node_modules/fumadocs-ui/dist/**/*.js";
+
+/* Accent: the portfolio's cyan (ricardotapia.dev), not Fumadocs' neutral. */
+:root {
+  --color-fd-primary: #0e7490;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-ring: #0e7490;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+.dark {
+  --color-fd-primary: #06b6d4;
+  --color-fd-primary-foreground: #0a0a0a;
+  --color-fd-ring: #06b6d4;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+  /* JetBrains Mono on headings and labels, Inter on running text — the same
+     pairing as the portfolio. */
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-mono);
+    letter-spacing: -0.02em;
+  }
+
+  /* Anything that acts like a control gets the pointer. Browsers default
+     `<button>` to `default`, which reads as disabled next to real links. */
+  button,
+  summary,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  label:has(> input[type="checkbox"]),
+  label:has(> input[type="radio"]),
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="range"],
+  select {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
+@layer components {
+  /* Shared press/lift feel for the site's own buttons and cards. Transform is
+     cheap to animate; box-shadow alone repaints. */
+  .btn-lift {
+    transition:
+      transform 150ms ease,
+      box-shadow 150ms ease,
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+  .btn-lift:hover {
+    transform: translateY(-1px);
+  }
+  .btn-lift:active {
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-lift,
+    .btn-lift:hover,
+    .btn-lift:active {
+      transform: none;
+      transition: none;
+    }
+  }
+}
+
+/*
+ * uploaderkit is styled entirely through `--color-ui-*` and ships no `dark:`
+ * rules, so under a dark theme it renders dark text on a white surface. Its
+ * README documents these variables as the rebrand surface; redeclaring them
+ * under `.dark` is how an app gives it a dark mode.
+ *
+ * listkit needs none of this: it ships additive `dark:` variants and registers
+ * `@custom-variant dark` itself, so it follows the class already.
+ */
+.dark {
+  --color-ui-surface: #0a0a0a;
+  --color-ui-surface-subtle: #111113;
+  --color-ui-surface-muted: #1a1a1d;
+
+  --color-ui-fg: #ededef;
+  --color-ui-muted: #a1a1aa;
+  --color-ui-placeholder: #71717a;
+
+  --color-ui-border: #27272a;
+  --color-ui-border-strong: #3f3f46;
+  --color-ui-ring: #0e7490;
+
+  --color-ui-primary: #06b6d4;
+  --color-ui-primary-hover: #22d3ee;
+  --color-ui-primary-fg: #0a0a0a;
+  --color-ui-primary-soft: #083344;
+  --color-ui-primary-soft-fg: #a5f3fc;
+
+  --color-ui-danger-soft: #450a0a;
+  --color-ui-danger-soft-fg: #fca5a5;
+  --color-ui-success-soft: #052e16;
+  --color-ui-warning-soft: #422006;
+
+  --color-ui-overlay: rgb(0 0 0 / 0.7);
+}
+
+/*
+ * Fumadocs' copy button floats over the code viewport. That viewport scrolls
+ * horizontally, so no amount of padding keeps a long single-line command out
+ * from under it — the button needs to be opaque rather than the code moved.
+ */
+figure [aria-label^="Copy"] {
+  background-color: var(--color-fd-secondary);
+  box-shadow: 0 0 0 4px var(--color-fd-secondary);
+}
