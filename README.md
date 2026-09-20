@@ -39,11 +39,12 @@ you added a section, in which case the build will tell you.
 
 ## Architecture
 
-| Layer                                                   | Owner     |
-| ------------------------------------------------------- | --------- |
-| Docs shell — page tree, sidebar, search, TOC, rendering | Fumadocs  |
-| Landing pages, hub, playgrounds, releases               | This repo |
-| Sitemap, robots, JSON-LD, OG images, hreflang           | This repo |
+| Layer                                                        | Owner     |
+| ------------------------------------------------------------ | --------- |
+| Docs shell — page tree, sidebar, TOC, rendering, search UI   | Fumadocs  |
+| Search index — every page in both locales, split per heading | This repo |
+| Overview pages, hub, playground gallery, releases            | This repo |
+| Sitemap, robots, JSON-LD, OG images, hreflang                | This repo |
 
 Fumadocs ships no SEO layer on purpose, so that half is ported from
 [metri.info](https://metri.info) and [ricardotapia.dev](https://ricardotapia.dev).
@@ -55,9 +56,9 @@ generated.
 
 ```
 /                         /es                            hub
-/listkit                  /es/listkit                    landing
-/listkit/docs/[...slug]   /es/listkit/docs/[...slug]      23 generated pages
-/listkit/playground       /es/listkit/playground          live demo
+/listkit                  /es/listkit                    overview
+/listkit/docs/[...slug]   /es/listkit/docs/[...slug]      12 generated pages
+/listkit/playground       /es/listkit/playground          gallery, 5 cases
 /listkit/releases         /es/listkit/versiones           GitHub Releases
 ```
 

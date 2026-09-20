@@ -21,7 +21,6 @@
     "clsx": "^2.1.1",
     "fumadocs-core": "16.15.12",
     "fumadocs-ui": "16.15.12",
-    "geist": "^1.7.2",
     "github-slugger": "^2.0.0",
     "listkit": "^5.0.0",
     "lucide-react": "^0.471.1",
