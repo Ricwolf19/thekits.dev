@@ -2,6 +2,7 @@ import type { LinkItemType } from "fumadocs-ui/layouts/shared";
 import { BookOpen, Github, LayoutGrid, Play } from "lucide-react";
 
 import { LocaleToggle } from "@/components/shell/LocaleToggle";
+import { Logo } from "@/components/ui/Logo";
 import { NpmIcon } from "@/components/ui/NpmIcon";
 import { PackageIcon } from "@/components/ui/PackageIcon";
 import { createT, type Locale, type TFunction } from "@/lib/i18n/config";
@@ -133,9 +134,12 @@ export const navLinks = (
   ];
 };
 
-/** Nav identity, shared so the wordmark is defined once. */
+/** Nav identity, shared so the mark and wordmark are defined once. */
 export const navTitle = (
-  <span className="font-display text-sm font-semibold tracking-tight">
-    {site.name}
+  <span className="flex items-center gap-2">
+    <Logo className="size-6" />
+    <span className="font-display text-sm font-semibold tracking-tight">
+      {site.name}
+    </span>
   </span>
 );

@@ -29,13 +29,17 @@ app/
     [pkg]/layout.tsx    The docs shell — wraps overview, docs, playground, releases
   es/                   Spanish tree under /es. Its own root layout.
   api/playground/       Upload route for the uploaderkit demo (see §5)
+  api/search/           Search API over the indexes in lib/search
+  icon.svg              Favicon; Next wires it. apple-icon.png beside it
   sitemap.ts robots.ts  Hand-rolled; Fumadocs ships no SEO layer
 components/
   layout/               SiteFooter, FeatureGrid, Faq
   pages/                Locale-aware page bodies, one per route kind
   playground/           DemoCase shell + one file per gallery case
-  ui/                   InstallCommand (pm tabs + copy), NpmIcon, PackageIcon
+  ui/                   InstallCommand (pm tabs + copy), Logo, NpmIcon, PackageIcon
   mdx/ seo/ shell/      Renderer, JSON-LD, html shell + locale toggle
+public/
+  logo.svg              The mark, for the README and any <img> consumer
 content/
   listkit.map.ts        README section → docs page manifests
   uploaderkit.map.ts
@@ -197,7 +201,17 @@ which reads as disabled beside a real link) and `.btn-lift` supplies the shared
 hover lift, disabled under `prefers-reduced-motion`. Fonts are
 Inter for running text and JetBrains Mono for headings, labels and code, via
 `next/font/google` in `RootHtml`. Icons are lucide-react; npm has no lucide
-glyph, so `components/ui/NpmIcon.tsx` is the one hand-drawn SVG. reactbits Pro
+glyph, so `components/ui/NpmIcon.tsx` is one of two hand-drawn SVGs.
+
+The other is `components/ui/Logo.tsx`: an upward arrow over stacked rows —
+uploaderkit and listkit in one glyph — in the same cyan pair as the accent. Its
+arrow is a **mask cutout, not a white fill**, so it takes the page colour and
+reads identically in light and dark; a white fill vanished into the page on
+light. `app/icon.svg` and `public/logo.svg` are the same artwork at the same
+`viewBox="240 240 545 545"` — the tightest square that still centres the mark.
+The source pads it to about a third of a 1024 canvas, which left the bars too
+few pixels to survive a 16px favicon. `app/apple-icon.png` sits on a solid
+surface, because iOS ignores transparency. reactbits Pro
 was considered and not used: it is a paid library and Fumadocs' `Card`,
 `CodeBlock`, `Tabs` and `Steps` cover the same needs.
 
