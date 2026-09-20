@@ -42,16 +42,27 @@ describe("sitemap", () => {
   it("submits every URL in both languages", async () => {
     const entries = await load();
     const { ROUTE_READY } = await import("@/lib/site");
-    // Counted from the fixture: 1 hub, plus per package a landing, its doc
-    // pages, and whichever of playground/releases is switched on.
+    // From the fixture: 1 hub, plus per package its landing, whichever of
+    // playground/releases is on, and its doc pages *excluding* the overview —
+    // that one is served at the package URL, not under /docs.
     const extras =
       (ROUTE_READY.playground ? 1 : 0) + (ROUTE_READY.releases ? 1 : 0);
-    const pages = 1 + (1 + 2 + extras) + (1 + 1 + extras);
+    const pages = 1 + (1 + 1 + extras) + (1 + 0 + extras);
     expect(entries).toHaveLength(pages * 2);
 
     const urls = entries.map((e) => e.url);
-    expect(urls).toContain("https://thekits.dev/listkit/docs/overview");
-    expect(urls).toContain("https://thekits.dev/es/listkit/docs/overview");
+    expect(urls).toContain("https://thekits.dev/listkit/docs/getting-started");
+    expect(urls).toContain(
+      "https://thekits.dev/es/listkit/docs/getting-started",
+    );
+  });
+
+  it("serves the overview at the package URL, never under /docs", async () => {
+    // Both would render the same README section; two URLs for one page is a
+    // duplicate-content problem of our own making.
+    const urls = (await load()).map((e) => e.url);
+    expect(urls).toContain("https://thekits.dev/listkit");
+    expect(urls.some((u) => u.endsWith("/docs/overview"))).toBe(false);
   });
 
   it("emits no duplicate locations", async () => {
@@ -94,7 +105,9 @@ describe("sitemap", () => {
 
   it("dates docs from the release they were generated from", async () => {
     const entries = await load();
-    const doc = entries.find((e) => e.url.endsWith("/listkit/docs/overview"));
+    const doc = entries.find((e) =>
+      e.url.endsWith("/listkit/docs/getting-started"),
+    );
     expect(doc?.lastModified).toEqual(new Date("2026-09-13T20:45:31Z"));
   });
 });

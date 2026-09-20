@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { getAllContent, getPackageContent } from "@/lib/content/fetch";
+import { OVERVIEW_SLUG } from "@/lib/content/manifest";
 import { createT, type Locale } from "@/lib/i18n/config";
 import { pageMetadata } from "@/lib/seo";
 import { isPackageId, PACKAGE_IDS, type PackageId } from "@/lib/site";
@@ -21,10 +22,9 @@ export const packageParams = async () => PACKAGE_IDS.map((pkg) => ({ pkg }));
 export const docsParams = async () => {
   const all = await getAllContent();
   return all.flatMap((content) =>
-    content.pages.map((page) => ({
-      pkg: content.id,
-      slug: [page.spec.slug],
-    })),
+    content.pages
+      .filter((page) => page.spec.slug !== OVERVIEW_SLUG)
+      .map((page) => ({ pkg: content.id, slug: [page.spec.slug] })),
   );
 };
 

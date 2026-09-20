@@ -6,6 +6,7 @@ import { DEFAULT_LOCALE, type Locale, LOCALES } from "../i18n/config";
 import { routePath } from "../i18n/routes";
 import type { PackageId } from "../site";
 import { assemblePage, buildAnchorIndex } from "./assemble";
+import { OVERVIEW_SLUG } from "./manifest";
 import { getPackageContent, type PackageContent } from "./fetch";
 
 /**
@@ -52,6 +53,7 @@ export const buildFiles = (content: PackageContent) => {
     const anchors = buildAnchorIndex(content.pages, readme);
 
     for (const { spec, indices } of content.pages) {
+      if (spec.slug === OVERVIEW_SLUG) continue;
       files.push({
         type: "page",
         path: `${spec.slug}.${locale}.md`,
@@ -77,7 +79,9 @@ export const buildFiles = (content: PackageContent) => {
       data: {
         title: content.id,
         root: true,
-        pages: content.pages.map((page) => page.spec.slug),
+        pages: content.pages
+          .map((page) => page.spec.slug)
+          .filter((slug) => slug !== OVERVIEW_SLUG),
       },
     });
   }

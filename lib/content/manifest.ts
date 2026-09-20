@@ -17,6 +17,14 @@ export type PageSpec = {
   readonly headings: readonly string[];
 };
 
+/**
+ * The page whose body the package's own route renders. It stays in the
+ * manifest so its README heading is still claimed by the parity checks, but it
+ * is not emitted as a docs page — otherwise the same Features section would
+ * live at two URLs.
+ */
+export const OVERVIEW_SLUG = "overview";
+
 export type PackageManifest = {
   readonly pages: readonly PageSpec[];
 };

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { cacheLife } from "next/cache";
 
 import { getAllContent } from "@/lib/content/fetch";
+import { OVERVIEW_SLUG } from "@/lib/content/manifest";
 import { ROUTE_READY } from "@/lib/site";
 import { hreflangMap } from "@/lib/seo";
 import { routePath, type RouteDescriptor } from "@/lib/i18n/routes";
@@ -55,14 +56,16 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
         ...(ROUTE_READY.releases
           ? entry({ kind: "releases", pkg }, 0.5, "weekly", released)
           : []),
-        ...content.pages.flatMap((page) =>
-          entry(
-            { kind: "docs", pkg, slug: [page.spec.slug] },
-            0.7,
-            "monthly",
-            released,
+        ...content.pages
+          .filter((page) => page.spec.slug !== OVERVIEW_SLUG)
+          .flatMap((page) =>
+            entry(
+              { kind: "docs", pkg, slug: [page.spec.slug] },
+              0.7,
+              "monthly",
+              released,
+            ),
           ),
-        ),
       ];
     }),
   ];
