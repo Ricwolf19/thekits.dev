@@ -12,28 +12,35 @@ const MAX = 2 * 1024 * 1024;
  */
 describe("demo scopes", () => {
   it("imports without throwing and registers both scopes", () => {
-    expect(demoScopes.names).toEqual(["demo-image", "demo-document"]);
+    expect(demoScopes.names).toEqual([
+      "demo-image",
+      "demo-document",
+      "demo-avatar",
+      "demo-strict-pdf",
+    ]);
     expect(demoScopes.has("demo-image")).toBe(true);
     expect(demoScopes.has("nope")).toBe(false);
   });
 
-  it("gives each scope its own folder so a replace cannot cross scopes", () => {
+  it("gives every scope a key no other scope's key is a prefix of", () => {
+    // uploaderkit rejects overlapping prefixes at import time; this pins the
+    // same rule on full keys, since `demo-avatar` is a single-file key with no
+    // filename and has no "folder" to compare.
     const file = {
       name: "f.png",
       size: 1,
       type: "image/png",
       arrayBuffer: async () => new ArrayBuffer(1),
     };
-    const dirs = demoScopes.names.map((name) =>
-      demoScopes
-        .get(name)
-        .path("entity", file)
-        .replace(/[^/]+$/, ""),
+    const keys = demoScopes.names.map((name) =>
+      demoScopes.get(name).path("entity", file),
     );
-    expect(dirs).toEqual(["demo/entity/images/", "demo/entity/docs/"]);
-    // Neither prefix may contain the other, which is what uploaderkit rejects.
-    expect(dirs[0].startsWith(dirs[1])).toBe(false);
-    expect(dirs[1].startsWith(dirs[0])).toBe(false);
+    expect(new Set(keys).size).toBe(keys.length);
+    for (const a of keys) {
+      for (const b of keys) {
+        if (a !== b) expect(a.startsWith(`${b}/`)).toBe(false);
+      }
+    }
   });
 
   it("caps size on every scope, since the demo endpoint is unauthenticated", () => {
