@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  quality:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-repo
+
+      - name: Format check
+        run: bun run format
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Secrets scan
+        run: bunx secretlint "**/*"
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Tests
+        run: bun run test
+
+      # No CONTENT_LOCAL_ROOT here on purpose. CI builds from the packages'
+      # published release tags, which is what Vercel will do, so a README change
+      # that is committed but unreleased fails here rather than in production.
+      - name: Build
+        run: bun run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://thekits.dev
