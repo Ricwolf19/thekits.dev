@@ -1,8 +1,8 @@
+import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { DocsShell } from "@/components/pages/DocsShell";
 import { isPackageId } from "@/lib/site";
-import { notFound } from "next/navigation";
 
 const Layout = async ({
   children,
@@ -14,7 +14,7 @@ const Layout = async ({
   const { pkg } = await params;
   if (!isPackageId(pkg)) notFound();
   return (
-    <DocsShell pkg={pkg} locale="en">
+    <DocsShell pkg={pkg} locale="es">
       {children}
     </DocsShell>
   );

@@ -16,11 +16,8 @@ export const DocsRoute = async ({
   const { pkg, slug } = await params;
   if (!isPackageId(pkg)) redirect(routePath({ kind: "home" }, locale));
 
-  // The docs root has no page of its own; send it to the overview rather than
-  // serving a duplicate of that page at two URLs.
-  if (!slug?.length) {
-    redirect(routePath({ kind: "docs", pkg, slug: ["overview"] }, locale));
-  }
+  // The docs root has no page of its own: the package route is the overview.
+  if (!slug?.length) redirect(routePath({ kind: "package", pkg }, locale));
 
   return <DocsArticle pkg={pkg} locale={locale} slug={slug} />;
 };

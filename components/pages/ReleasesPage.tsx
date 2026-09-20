@@ -1,8 +1,14 @@
+import {
+  DocsBody,
+  DocsDescription,
+  DocsPage,
+  DocsTitle,
+} from "fumadocs-ui/page";
+import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { MarkdownBody } from "@/components/mdx/MarkdownBody";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { SiteHeader } from "@/components/layout/SiteHeader";
 import { getPackageContent } from "@/lib/content/fetch";
 import { createT, type Locale } from "@/lib/i18n/config";
 import { INTL_LOCALE } from "@/lib/i18n/localeCodes";
@@ -11,6 +17,12 @@ import { getReleases } from "@/lib/releases";
 import { breadcrumbSchema } from "@/lib/schema";
 import { isPackageId, PACKAGES, type PackageId } from "@/lib/site";
 
+/**
+ * Changelog layout in the shape of daypicker.dev: a version index that stays
+ * put while the notes scroll, one anchored heading per version with its date
+ * and a "latest" mark, and the notes as release-please wrote them (already
+ * grouped under Features / Bug Fixes headings).
+ */
 export const ReleasesPage = async ({
   pkg,
   locale,
@@ -20,12 +32,14 @@ export const ReleasesPage = async ({
 }) => {
   if (!isPackageId(pkg)) notFound();
   const id: PackageId = pkg;
-
   const [releases, content] = await Promise.all([
     getReleases(id),
     getPackageContent(id),
   ]);
   const t = createT(locale);
+  const date = new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    dateStyle: "long",
+  });
 
   return (
     <>
@@ -39,66 +53,77 @@ export const ReleasesPage = async ({
           },
         ])}
       />
+      <DocsPage
+        toc={releases.map((r) => ({
+          title: `v${r.version}`,
+          url: `#${r.version}`,
+          depth: 2,
+        }))}
+      >
+        <p className="text-fd-primary font-display text-sm font-medium">{id}</p>
+        <DocsTitle>{t("releases.title")}</DocsTitle>
+        <DocsDescription>{t("releases.subtitle")}</DocsDescription>
 
-      <SiteHeader
-        locale={locale}
-        descriptor={{ kind: "releases", pkg: id }}
-        up={{ kind: "package", pkg: id }}
-        label={id}
-        width="max-w-3xl"
-      />
-
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pb-24">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          {t("releases.title")}
-        </h1>
-        <p className="text-fd-muted-foreground mt-3">
-          {t("releases.subtitle")}
-        </p>
-
-        {releases.length === 0 ? (
-          <p className="text-fd-muted-foreground mt-12">
+        <DocsBody>
+          {releases.length === 0 ? (
             <a
-              className="underline underline-offset-2"
+              className="text-fd-primary inline-flex items-center gap-1.5"
               href={`${PACKAGES[id].repo}/releases`}
             >
-              {t("common.viewGithub")}
+              {t("common.viewGithub")} <ExternalLink className="size-3.5" />
             </a>
-          </p>
-        ) : (
-          <ol className="mt-12 space-y-12">
-            {releases.map((release) => (
-              <li key={release.tag} id={release.version}>
-                <div className="flex flex-wrap items-baseline gap-x-3">
-                  <h2 className="font-mono text-xl font-semibold">
-                    {release.version}
-                  </h2>
-                  {release.version === content.version ? (
-                    <span className="bg-fd-primary/10 text-fd-primary rounded px-2 py-0.5 text-xs font-medium">
-                      latest
-                    </span>
-                  ) : null}
-                  <time
-                    className="text-fd-muted-foreground text-sm"
-                    dateTime={release.publishedAt}
+          ) : (
+            <div className="not-prose">
+              <ol className="divide-fd-border divide-y">
+                {releases.map((r) => (
+                  <li
+                    key={r.tag}
+                    id={r.version}
+                    className="scroll-mt-24 py-10 first:pt-0"
                   >
-                    {t("releases.published", {
-                      date: new Intl.DateTimeFormat(INTL_LOCALE[locale], {
-                        dateStyle: "long",
-                      }).format(new Date(release.publishedAt)),
-                    })}
-                  </time>
-                </div>
-                {release.body ? (
-                  <div className="prose-fd mt-4 text-sm">
-                    <MarkdownBody>{release.body}</MarkdownBody>
-                  </div>
-                ) : null}
-              </li>
-            ))}
-          </ol>
-        )}
-      </main>
+                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <h2 className="font-mono text-2xl font-semibold">
+                        <a href={`#${r.version}`} className="hover:underline">
+                          v{r.version}
+                        </a>
+                      </h2>
+                      {r.version === content.version ? (
+                        <span className="bg-fd-primary/10 text-fd-primary rounded px-2 py-0.5 text-xs font-semibold">
+                          {t("common.latest")}
+                        </span>
+                      ) : null}
+                      {r.prerelease ? (
+                        <span className="bg-fd-muted rounded px-2 py-0.5 text-xs">
+                          {t("common.prerelease")}
+                        </span>
+                      ) : null}
+                      <time
+                        className="text-fd-muted-foreground text-sm"
+                        dateTime={r.publishedAt}
+                      >
+                        {t("releases.published", {
+                          date: date.format(new Date(r.publishedAt)),
+                        })}
+                      </time>
+                      <a
+                        href={r.url}
+                        className="text-fd-muted-foreground hover:text-fd-primary ml-auto inline-flex items-center gap-1 text-xs transition-colors"
+                      >
+                        GitHub <ExternalLink className="size-3" />
+                      </a>
+                    </div>
+                    {r.body ? (
+                      <div className="prose prose-sm dark:prose-invert mt-5 max-w-none">
+                        <MarkdownBody>{r.body}</MarkdownBody>
+                      </div>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </DocsBody>
+      </DocsPage>
     </>
   );
 };

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { PackageLanding } from "@/components/pages/PackageLanding";
+import { PackageOverview } from "@/components/pages/PackageOverview";
 import {
   landingMetadata,
   type PackageRouteParams,
@@ -14,7 +14,7 @@ export const generateMetadata = ({ params }: Props): Promise<Metadata> =>
   landingMetadata(params, "es");
 
 const Page = async ({ params }: Props) => (
-  <PackageLanding pkg={(await params).pkg} locale="es" />
+  <PackageOverview pkg={(await params).pkg} locale="es" />
 );
 
 export default Page;

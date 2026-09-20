@@ -61,7 +61,7 @@ const STATUS_TONE: Record<Invoice["status"], string> = {
 };
 
 /**
- * The listkit demo.
+ * The whole list from one config object — the case a reader should see first.
  *
  * A client island by necessity — the list owns URL state and interaction — but
  * the page around it stays server-rendered, so the prose and metadata that
@@ -70,13 +70,13 @@ const STATUS_TONE: Record<Invoice["status"], string> = {
  * It renders the published package from npm, not a workspace link: a demo that
  * shows unreleased behaviour is worse than no demo.
  */
-export const ListkitDemo = ({ locale }: { locale: Locale }) => {
+export const HelloCase = ({ locale }: { locale: Locale }) => {
   const t = COPY[locale];
 
   const config = useMemo(
     () =>
       defineListConfig<Invoice>({
-        id: "playground-invoices",
+        id: "gallery-hello",
         title: t.title,
         subtitle: t.subtitle,
         pageSize: 12,

@@ -33,15 +33,13 @@ const COPY = {
 } as const;
 
 /**
- * The uploaderkit demo.
- *
- * Unlike the listkit one this needs a server, so it posts to a route handler
- * backed by the package's in-memory provider. Each upload is a self-contained
+ * The one case that posts to the real route handler, backed by the package's
+ * in-memory provider; every other case uses `createFakeStrategy`. Each upload is a self-contained
  * round trip: the result panel shows the descriptor the server returned rather
  * than a persistent gallery, because on serverless nothing survives the
  * invocation and a gallery would look broken.
  */
-export const UploaderDemo = ({ locale }: { locale: Locale }) => {
+export const ServerCase = ({ locale }: { locale: Locale }) => {
   const t = COPY[locale];
   const [stored, setStored] = useState<StoredFile[]>([]);
   const [error, setError] = useState<string | null>(null);
