@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+/* Imported unprefixed on purpose. Fumadocs' preset ships its own utility
+   classes (`ps-6`, …) and `prefix()` namespaces those too, so the theme's
+   internals stop resolving. Nothing else here claims the `fd-` variables, so
+   there is no collision to guard against. */
+@import "fumadocs-ui/css/preset.css";
+
+@import "listkit/tailwind.css";
+@import "uploaderkit/tailwind.css";
+
+@source "../node_modules/fumadocs-ui/dist/**/*.js";
