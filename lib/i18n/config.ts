@@ -1,0 +1,48 @@
+/**
+ * Safe in Server or Client Components. Dependency-free on purpose: next-intl
+ * needs middleware, which the explicit route trees exist to avoid.
+ */
+import { en, type TranslationKey } from "./en";
+import { es } from "./es";
+
+export type Locale = "en" | "es";
+
+/** English is the default and lives at the site root; Spanish is prefixed. */
+export const DEFAULT_LOCALE: Locale = "en";
+export const LOCALES: readonly Locale[] = ["en", "es"] as const;
+
+const DICTS: Record<Locale, Record<TranslationKey, string>> = { en, es };
+
+const interpolate = (
+  template: string,
+  vars?: Record<string, string | number>,
+): string => {
+  if (!vars) return template;
+  return template.replace(/\{(\w+)\}/g, (match, name) =>
+    name in vars ? String(vars[name]) : match,
+  );
+};
+
+export type TFunction = (
+  key: TranslationKey,
+  vars?: Record<string, string | number>,
+) => string;
+
+/** Pure translate — falls back to English, then to the key itself. */
+export const translate = (
+  locale: Locale,
+  key: TranslationKey,
+  vars?: Record<string, string | number>,
+): string => interpolate(DICTS[locale][key] ?? en[key] ?? key, vars);
+
+/** A translate function bound to a locale — for Server Components that receive
+ * the locale as a prop (keeps pages statically generatable per language). */
+export const createT =
+  (locale: Locale): TFunction =>
+  (key, vars) =>
+    translate(locale, key, vars);
+
+export const isLocale = (value: unknown): value is Locale =>
+  value === "en" || value === "es";
+
+export type { TranslationKey };
