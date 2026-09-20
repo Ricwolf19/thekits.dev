@@ -16,7 +16,9 @@ const GITHUB_USER = GITHUB_OWNER;
 export const author = {
   name: "Ricardo Tapia",
   url: "https://ricardotapia.dev",
+  /** Profile, not a repository: the nav's icons are "who makes this". */
   github: `https://github.com/${GITHUB_USER}`,
+  npm: "https://www.npmjs.com/~ricwolf19",
 } as const;
 
 export const site = {
@@ -95,10 +97,6 @@ export const readmeRawUrl = (
   locale: Locale,
 ): string =>
   `https://raw.githubusercontent.com/${GITHUB_USER}/${info.id}/${info.tagPrefix}${version}/${info.readme[locale]}`;
-
-/** GitHub "edit this page" target — the default branch, not the pinned tag. */
-export const readmeEditUrl = (info: PackageInfo, locale: Locale): string =>
-  `${info.repo}/edit/main/${info.readme[locale]}`;
 
 export const releasesApiUrl = (info: PackageInfo): string =>
   `https://api.github.com/repos/${GITHUB_USER}/${info.id}/releases`;

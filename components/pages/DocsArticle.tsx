@@ -10,13 +10,8 @@ import { MarkdownBody } from "@/components/mdx/MarkdownBody";
 import { pageToc } from "@/lib/content/assemble";
 import { getPackageContent } from "@/lib/content/fetch";
 import { getDocsSource } from "@/lib/content/source";
-import { createT, type Locale } from "@/lib/i18n/config";
-import {
-  GITHUB_OWNER,
-  PACKAGES,
-  type PackageId,
-  readmeEditUrl,
-} from "@/lib/site";
+import type { Locale } from "@/lib/i18n/config";
+import type { PackageId } from "@/lib/site";
 
 export const DocsArticle = async ({
   pkg,
@@ -44,35 +39,13 @@ export const DocsArticle = async ({
       }))
     : [];
 
-  const t = createT(locale);
-
   return (
-    <DocsPage
-      toc={toc}
-      editOnGithub={{
-        // Points at the default branch, not the pinned release tag: a reader
-        // fixing a typo should edit what ships next, not a frozen snapshot.
-        owner: GITHUB_OWNER,
-        repo: pkg,
-        sha: "main",
-        path: PACKAGES[pkg].readme[locale],
-      }}
-      full={false}
-    >
+    <DocsPage toc={toc} full={false}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
         <MarkdownBody>{page.data.content}</MarkdownBody>
       </DocsBody>
-      <p className="text-fd-muted-foreground mt-12 border-t pt-6 text-sm">
-        {t("docs.generatedFrom", { version: content.version })}{" "}
-        <a
-          className="underline underline-offset-2"
-          href={readmeEditUrl(PACKAGES[pkg], locale)}
-        >
-          {t("docs.editOnGithub")}
-        </a>
-      </p>
     </DocsPage>
   );
 };
