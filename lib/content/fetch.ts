@@ -89,12 +89,7 @@ const readLocal = (id: PackageId, locale: Locale): Promise<string> =>
  * truncates at 65,536 bytes — listkit's README is 88,687, so that copy stops
  * mid-sentence. GitHub raw at the release tag is complete and still pinned.
  */
-export const getPackageContent = async (
-  id: PackageId,
-): Promise<PackageContent> => {
-  "use cache";
-  cacheLife("max");
-
+const loadPackageContent = async (id: PackageId): Promise<PackageContent> => {
   const info = PACKAGES[id];
   const release = await fetchRelease(id);
   const { version } = release;
@@ -133,11 +128,28 @@ export const getPackageContent = async (
   };
 };
 
+/**
+ * Cached for pages. Split from `loadPackageContent` because `"use cache"` is
+ * only valid inside the App Router's work store, and the search route builds
+ * its index at module init — outside it.
+ */
+export const getPackageContent = async (
+  id: PackageId,
+): Promise<PackageContent> => {
+  "use cache";
+  cacheLife("max");
+  return loadPackageContent(id);
+};
+
 /** Every package's content, for the sitemap and the hub. */
 export const getAllContent = async (): Promise<PackageContent[]> => {
   "use cache";
   cacheLife("max");
   return Promise.all(
-    (Object.keys(PACKAGES) as PackageId[]).map(getPackageContent),
+    (Object.keys(PACKAGES) as PackageId[]).map(loadPackageContent),
   );
 };
+
+/** Uncached: for callers that run outside a request or cache scope. */
+export const loadAllContent = async (): Promise<PackageContent[]> =>
+  Promise.all((Object.keys(PACKAGES) as PackageId[]).map(loadPackageContent));
