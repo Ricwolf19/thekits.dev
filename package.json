@@ -18,6 +18,7 @@
     "content:check": "bun run scripts/verify-live.ts"
   },
   "dependencies": {
+    "@vercel/speed-insights": "^2.0.0",
     "clsx": "^2.1.1",
     "fumadocs-core": "16.15.12",
     "fumadocs-ui": "16.15.12",

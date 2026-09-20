@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
@@ -44,6 +45,11 @@ export const RootHtml = ({
       >
         {children}
       </RootProvider>
+      {/* Both locale trees render this component, so mounting it once here
+          covers the whole site. The /next entry reads the route from
+          `useParams`, so metrics aggregate per dynamic segment rather than
+          per URL — /[pkg]/docs/[[...slug]], not 44 separate rows. */}
+      <SpeedInsights />
     </body>
   </html>
 );
